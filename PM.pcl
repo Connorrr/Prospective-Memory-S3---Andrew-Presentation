@@ -1,0 +1,316 @@
+#Function: 		PM.pcl
+#Description:	Presentation File for Prospective Memory
+#Programmer:	Connor Reid
+#Created@:		7/7/14
+#LastMod@:		7/7/14
+#-------------------------------------------------------------------
+include "PM_Subs.pcl";
+include "PM_Global.pcl";
+
+preset int target;
+preset int PM_Condition;
+preset int study;
+output_port port;
+
+if (output_port_manager.port_count() == 0) then      
+   term.print_line( "No output ports selected!" );
+else
+   port = output_port_manager.get_port( 1 );
+end;
+
+output_file out = new output_file;	#Participant Response Data
+string logfile_name = logfile.subject() + "_" + date_time("hhnnss_dd-mm-yyyy") + "_PM_" + ".csv";
+out.open(logfile_name);
+out.print("Trial No,Stimulus,Trigger,Response,Response Time(ms),Correct,Block,Fixation Duration\n");
+
+array<string> OTWords[0][0];				# Ongoing Task Stimulus
+array<string> PracticeWords[0][6];		# Ongoing Task Stimulus
+
+string pract_inst_string = "";
+
+if (target > 2 || target < 1) then
+	exit("Target buttton must be either 1 for K or 2 for L");
+end;
+
+if (PM_Condition > 2 || PM_Condition < 1) then
+	exit("PM_Condition must be either 1 for DT or 2 for AT");
+end;
+
+if (study > 2 || study < 1) then
+	exit("Study can only be 1 or 2");
+end;
+
+ot_instructions_text.set_font_size(FONT_SIZE);
+
+int rt = 0;							# reaction time
+string resp = "";					# Responses for the Log file
+array <string> rrt[2];			# response and response time array
+string OT_Correct = "";			# Was the response correct.  Used in Log files
+int target_button = 0;			# The correct button for the user to press
+int fix_dur = 0;					# Duration of the fixation cross
+int blank_dur = 0;				# Duration of the blank screens between fixation and stim
+
+######################  PRACTICE  ###########################
+
+int corr_count = 0;				# Used to work out the percentage of correct answers
+bool PM_flag = false;			# Flag used to signal a duel response PM trial
+bool is_pass = false;			# flag used to select response jpg
+int per = 0;						# percentage correct
+string target_letter = "Z";	# The target letter used in PM tasks
+
+out.print("Practice\n");
+loop int k = 1 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
+
+	if (k == 1) then
+		pract_inst_string = get_ot_practice_instructions_string();
+		out.print("OT Practice\n");
+	elseif(k == 2 && PM_Condition == 1) then
+		pract_inst_string = get_at_practice_instructions_string();
+		out.print("AT Practice\n");
+	elseif(k == 2 && PM_Condition == 2) then
+		pract_inst_string = get_dt_practice_instructions_string();
+		out.print("DT Practice\n");
+	end;
+	get_input_csv(k, PracticeWords);
+	
+	#print_2d_array(PracticeWords);
+
+	term.print_line("Rows:  "  + string(PracticeWords.count()));
+	#term.print_line("Columns:  "  + string(PracticeWords[1].count()));
+	
+	loop int i = 1 until i > PracticeWords.count() begin			# Go through all rows
+		
+		ot_instructions_text.set_caption(pract_inst_string);		# Display practice instructions
+		ot_instructions_text.set_formatted_text( true );			# 
+		ot_instructions_text.redraw();									#
+		instructions_pic.add_part(ot_instructions_text, 0, 0);	#
+		instructions.present();												#
+		
+		loop int j = 1 until j > PracticeWords[i].count() begin		#Go through all collumns
+			fix_dur = get_fixation_duration(DITHER);						#Get duration for Fixation Cross
+			fixation_trial.set_duration(fix_dur);
+			fixation_trial.present();
+			blank_dur = get_blank_duration(BLANK_DITHER);
+			short_blank_trial.set_duration(blank_dur);
+			short_blank_trial.present();
+			stim_trial_text.set_caption(PracticeWords[i][j], true);	#Get Stimulus
+			if(PracticeWords[i+2][j] == "1")then							#Stimulus is OT Match (e.g. LKJKH)
+				target_button = target;											#target button is correct
+			elseif(PracticeWords[i+2][j] == "2")then						#Stimulus is Non-Match (e.g. LGJKH)
+				if(target == 2)then												#target button is the opposite to preset selection
+					target_button = 1;
+				else
+					target_button = 2;
+				end;
+			else																		#PM stimulus
+				target_button = 3;
+				PM_flag = true;
+			end;
+			if (PM_flag && PM_Condition == 2) then	#Is Dual Task Trial
+				port.send_code(int(PracticeWords[i+1][j]),10);			#  Send Assigned Trigger
+				if (i == 1) then													#  Set the duel task target letters to change with each practice run
+					target_letter = "Z";
+				elseif (i == 4) then
+					target_letter = "N";
+				elseif (i == 7) then
+					target_letter = "F";
+				end;
+				is_pass = duel_task_pm(rrt, parse_string(PracticeWords[i][j], target, target_letter));	#Get DT response, check if it is correct
+			else		#Is Abrupt Task Switch PM
+				port.send_code(int(PracticeWords[i+1][j]),10);			#Send Assigned Trigger
+				stim_trial.present();
+				is_pass = get_response(rrt, target_button);				#Get Response
+				short_blank_trial2.present();
+			end;
+			if(is_pass) then			#Correct
+				response_bitmap.set_filename("img/tick.JPG");
+				corr_count = corr_count + 1;
+				OT_Correct = "Correct";
+			else							#Incorrect
+				response_bitmap.set_filename("img/cross.JPG");
+				OT_Correct = "False";
+			end;
+			response_bitmap.load();
+			practice_response_trial.present();		#Show Feedback
+			log_string(out, (i+1)/2, PracticeWords[i][j], PracticeWords[i+1][j], rrt[1], rrt[2], OT_Correct, 0, fix_dur);	#Dump information to Log file
+			fix_dur = 0;
+			j = j + 1;	#Next Collumn
+			PM_flag = false;
+			is_pass = false;
+		end;
+		per = get_percentage(PracticeWords[i].count(), corr_count);	#Calculate Percentage Correct
+		if (per >= 80)then
+			ot_instructions_text.set_caption(string(per)+ "% Correct\n\n" + get_pass_response(), true);	#Yay you can move forward now
+			per = 0;
+			corr_count = 0;
+			instructions.present();
+			if(response_manager.last_response() != target) then	##  If user selects no, continue on.
+				i = 10;
+				break;
+			else	#Lets repeat that practice then
+				if (i > 4) then			#  If the user wants to practice again and the all three practice runs are complete, start again
+					i = -2;
+				end;
+			end;
+		else
+			corr_count = 0;
+			ot_instructions_text.set_caption(get_fail_response(), true);
+			instructions.present();
+			if (i > 4) then			#  If the user has to (failure) practice again and the all three practice runs are complete, start again
+				i = -2;
+			end;
+		end;
+		i = i + 3;
+	end;
+	k = k + 1;
+end;
+
+##################### PRACTICE ##############################
+
+ot_instructions_text.set_caption(get_start_string());
+ot_instructions_text.set_formatted_text( true );
+ot_instructions_text.redraw();
+instructions_pic.add_part(ot_instructions_text, 0, 0);
+instructions.present();
+
+array<string> FullStim[0][2];	# Array containing full words
+if (study == 1) then
+	get_input_csv(5, FullStim);
+else
+	get_input_csv(6, FullStim);
+end;
+
+#print_2d_array(FullStim);
+
+array <int> blocks[0];
+build_blocks(blocks, FullStim.count());		#blocks array contains numbers for every stimulus row 
+if (study != 2)then
+	blocks.shuffle();
+end;
+fix_dur = 0; 
+
+#print_1d_array(blocks);
+
+out.print("Trials\n");
+int j = 1;
+
+##################################### TRIALS ##############################################
+term.print_line("BlocksCount:  " + string(blocks.count()));
+loop int i = 1 until i > blocks.count() begin		## Rows
+	loop
+		int l = 1
+	until
+		l > FullStim[blocks[i]].count()		## Column
+	begin
+		fix_dur = get_fixation_duration(DITHER);		#Dither the fixation cross duration
+		fixation_trial.set_duration(fix_dur);
+		fixation_trial.present();
+		blank_dur = get_blank_duration(BLANK_DITHER);
+		short_blank_trial.set_duration(blank_dur);
+		short_blank_trial.present();
+		if(FullStim[blocks[i]+2][l] == "1")then		
+			target_button = target;
+		elseif(FullStim[blocks[i]+2][l] == "2")then
+			if(target == 2)then
+				target_button = 1;
+			else
+				target_button = 2;
+			end;
+		else
+			target_button = 3;
+			PM_flag = true;
+		end;
+		#term.print_line(FullStim[blocks[i]+1][l]);
+		if (study == 1) then			##  Set instructions for Study 1
+			if (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
+				#port.send_code(int(FullStim[blocks[i]+1][l]),10);
+				target_letter = FullStim[blocks[i]][l];
+				PM_flag = false;
+				ot_instructions_text.set_caption(get_target_string(FullStim[blocks[i]][l]));
+				ot_instructions_text.set_formatted_text( true );
+				ot_instructions_text.redraw();
+				instructions_pic.remove_part(1);
+				instructions_pic.add_part(ot_instructions_text, 0, 0);
+			else
+				stim_trial_text.set_caption(FullStim[blocks[i]][l], true);
+			end;
+		else	## Set Instructions for Study 2
+			int trgt_btn = 0;								# Target button for target trial
+			if (int(FullStim[blocks[i]+2][l]) == 5)then
+				PM_flag = false;
+				target_letter = FullStim[blocks[i]][l];
+				loop int k = 0 until k > 0 begin
+					space_trial.present();				# Press Space
+					target_letter_trial.present();	# The target letter is
+					short_fixation_trial.present();	# +
+					trgt_btn = get_letter_number(FullStim[blocks[i]][l]);		# Get target button
+					target_trial_text.set_caption(FullStim[blocks[i]][l]);	# Set Target Text
+					target_trial_text.redraw();
+					port.send_code(int(FullStim[blocks[i]+1][l]),10); #  send port code showing that target letter has been displayed
+					target_trial.present();
+					is_pass = get_response(rrt, trgt_btn);
+					if(!is_pass)then
+						return_trial.present();
+					else
+						short_blank_trial.present();
+						reposition_trial.present();
+						k = k + 1;
+					end;
+				end;
+			elseif(int(FullStim[blocks[i]+2][l]) == 6)then
+				PM_flag = false;
+				target_letter = FullStim[blocks[i]][l];
+				loop int k = 0 until k > 0 begin
+					target_letter_trial.present();	# The target letter is
+					short_fixation_trial.present();	#  +
+					trgt_btn = get_letter_number(FullStim[blocks[i]][l]);		# Get target button
+					target_trial_text.set_caption(FullStim[blocks[i]][l]);	# Set Target Text
+					target_trial_text.redraw();
+					port.send_code(int(FullStim[blocks[i]+1][l]),10); #  send port code showing that target letter has been displayed
+					target_trial.present();
+					is_pass = get_response(rrt, trgt_btn);
+					if(!is_pass)then
+						return_trial.present();
+					else
+						k = k + 1;
+					end;
+				end;
+			else
+				stim_trial_text.set_caption(FullStim[blocks[i]][l], true);
+			end;
+			port.send_code(int(FullStim[blocks[i]+1][l]),10);
+		end;
+		if (PM_flag && PM_Condition == 2) then			#  Duel Task
+			term.print_line("PM TASK");
+			port.send_code(int(FullStim[blocks[i]+1][l]),10);
+			is_pass = duel_task_pm(rrt, parse_string(FullStim[blocks[i]][l], target, target_letter));
+		elseif (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
+			if (study == 1)then
+				instructions.present();
+				term.print_line("INSTRUCTIONS");
+			end;
+		else
+			term.print_line("STIM");
+			port.send_code(int(FullStim[blocks[i]+1][l]),10);
+			stim_trial.present();
+			is_pass = get_response(rrt, target_button);
+			short_blank_trial2.present();
+		end;
+		if (is_pass) then
+			OT_Correct = "Correct";
+		else
+			OT_Correct = "Incorrect";
+		end;
+		if (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
+			OT_Correct = "New Target";
+			is_pass = get_response(rrt, target_button);
+		end;
+		PM_flag = false;
+
+		log_string(out, i, FullStim[blocks[i]][l], FullStim[blocks[i]+1][l], rrt[1], rrt[2], OT_Correct, (blocks[i]+2)/3, fix_dur);
+		fix_dur = 0;
+		l = l + 1;
+	end;
+	i = i + 1;
+end;
+goodbye_trial.present();

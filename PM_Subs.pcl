@@ -1,0 +1,408 @@
+#Function: 		PM_sUBS.pcl
+#Description:	Subroutines for PM.pcl
+#Programmer:	Connor Reid
+#Created@:		7/7/14
+#LastMod@:		7/7/14
+#-------------------------------------------------------------------
+
+sub
+	string get_ot_instructions_string
+begin
+	string instructions_string = "<b>Ongoing task instructions</b>\n\nMultiple five letter strings will be presented on the screen. An example stimulus may look like this <b>DKRKQ</b>.\n\n Your task is to determine if the letters presented in the second and fourth positions match one another (D<b>K</b>R<b>K</b>Q).\n\n In this example the letter K occurs in the second and forth serial position of the string.\n Therefore, it is a ‘matched’ stimulus and you should press the button labelled ‘YES’.\n\n Alternatively, other strings will be presented where the letters in the second and fourth position\n do not match (for example L<b>Y</b>Z<b>P</b>Q). This is a ‘non-matched’ stimulus and you should press the ‘NO’ button.\n\n Do you have any questions?";
+	instructions_string = instructions_string + "\n\nPress the <b>SPACEBAR</b> to begin.";
+	return instructions_string;
+end;
+
+sub
+	string get_at_instructions_string
+begin
+	string instructions_string = "<b>Abrupt task-switch instructions</b>\n\nMultiple five letter strings will be presented on the screen. An example stimulus may look like this <b>DKRKQ</b>.\n\n Your task is to determine if the letters presented in the <b>second</b> and <b>fourth</b> positions match one another (D<b>K</b>R<b>K</b>Q).\n\n In this example the letter K occurs in the second and forth serial position of the string. Therefore, it is a ‘matched’\nstimulus and you should press the button labelled ‘YES’.\n\nAlternatively, other strings will be presented where the letters in the second and fourth position do not match (for\nexample L<b>Y</b>Z<b>P</b>Q). This is a ‘non-matched’ stimulus and you should press the ‘NO’ button.\n\nThere is one other condition. Occasionally the letter B might occur in either the second, fourth, or <b>both</b> positions\n (E.g. <b>DBRBQ</b>). In this situation you should immediately press the SPACEBAR instead of the ‘YES’ or ‘NO’ buttons.\n\nOnce you have pressed the SPACEBAR";
+	instructions_string = instructions_string + ", please continue to match the stimuli.\n\n Do you have any questions?";
+	instructions_string = instructions_string + "\n\nPress the <b>SPACEBAR</b> to begin.";
+	return instructions_string;
+end;
+
+sub
+	string get_ot_practice_instructions_string
+begin
+	string instructions_string = "Multiple five letter strings will be presented on the screen. An example stimulus may look like this <b>DKDKD</b>. \n\nYour task is to determine as quickly as possible if the letters presented in the <b>second</b> and <b>fourth</b> positions match one.\nanother (DKDKD). \n\nIn this example the letter K occurs in the second and forth serial position of the string. Therefore, it is a ‘matched’\nstimulus and you should press the button labelled ‘YES’.\n\n";
+	instructions_string = instructions_string + "Sometimes however the letters in the second and fourth position will not match (for example D<b>Y</b>D<b>P</b>D). In this \nsituation you should press the ‘NO’ button. \n\nDo you have any questions?”\n\nOk, let’s try this task condition now…\n\nPress the Spacebar to start practice.";
+	return instructions_string;
+end;
+
+sub
+	string get_dt_instructions_string
+begin
+	string instructions_string = "<b>Dual-task instructions</b>\n\nMultiple five letter strings will be presented on the screen. An example stimulus may look like this <b>DKRKQ</b>.\n\nYour task is to determine if the letters presented in the <b>second</b> and <b>fourth</b> positions match one another (D<b>K</b>R<b>K</b>Q).\n\nIn this example the letter K occurs in the second and forth serial position of the string. Therefore, it is a ‘matched’\nstimulus and you should press the button labelled ‘YES’.\n\nAlternatively, other strings will be";
+	instructions_string = instructions_string + "presented where the letters in the second and fourth position do not match (for\nexample L<b>Y</b>Z<b>P</b>Q). This is a ‘non-matched’ stimulus and you should press the ‘NO’ button.\n\nThere is one other condition. Occasionally the letter B might occur in either the second, fourth, or <b>both</b> positions\n(E.g. <b>DBRBQ</b>). In this situation you should first determine if the letters match (‘YES’ or ‘NO’), and then press the\nSPACEBAR.\n\nOnce you have pressed the <b>SPACEBAR</b>, please continue to match the letters in the string.\n\n Do you have any questions?";
+	instructions_string = instructions_string + "\n\nPress the <b>SPACEBAR</b> to begin.";
+	return instructions_string;
+end;
+
+sub
+	string get_at_practice_instructions_string
+begin
+	string tmp = "There is an additional task condition that you need to be aware of.\n\nOccasionally a target letter will be presented in either the second, fourth, or <b>both</b> of these positions\n\nFor example: D <font color='255, 0, 0'>X</font> D B D or D B D <font color='255, 0, 0'>X</font> D or D <font color='255, 0, 0'>X</font> D <font color='255, 0, 0'>X</font> D\n\nIn this situation you should <b>immediately</b> press the SPACEBAR instead of the ‘YES’ or ‘NO’ buttons.\n\nAfter you have pressed the SPACEBAR, please continue to match the stimuli presented in the second and fourth\npositions as before. Please press the YES button when the letters match and NO when they don’t match.\n\nDo you have any questions?\n\nPress the Spacebar to start practice.\n";
+	return tmp;
+end;
+
+sub
+	string get_dt_practice_instructions_string
+begin
+	string tmp = "There is an additional task condition that you need to be aware of.\n\nOccasionally a target letter will be presented in either the second, fourth, or <b>both</b> of these positions\n\nFor example: D <font color='255, 0, 0'>X</font> D B D or D B D <font color='255, 0, 0'>X</font> D or D <font color='255, 0, 0'>X</font> D <font color='255, 0, 0'>X</font> D\n\nIn this situation you should <b>first</b> determine if the letters in the second and fourth position match (‘YES’ or ‘NO’), and\nTHEN press the SPACEBAR.\n\nAfter you have pressed the SPACEBAR, please continue to match the stimuli presented in the second and fourth\npositions as before. Please press the YES key when the letters match and NO no when they don’t match.\n\nDo you have any questions?\n\nPress the Spacebar to start practice";
+	return tmp;
+end;
+
+sub
+	string get_fail_response
+begin
+	string tmp = "Those weren’t too bad but let’s practice that again. Remember to respond as quickly and accurately as possible";
+	return tmp;
+end;
+
+sub
+	string get_pass_response
+begin
+	string tmp = "That was pretty good! Would you like to practice that again (yes) or move on (no)?";
+	return tmp;
+end;
+
+sub
+	string get_start_string
+begin
+	string tmp = "OK. Just a couple more things...";
+	return tmp;
+end;
+
+sub
+	string get_target_string(string in)
+begin
+	string tmp = "The target is the letter\n\n<b><font size='110'>" + in + "</font></b>\n\n\nPress the Spacebar to begin";
+	return tmp;
+end;
+
+sub int get_fixation_duration(int dith) begin ### THIS DITHER AND THE NEXT ARE ASSOCIATED WITH MULTIPLE BLANK SCREENS...
+	int dur = 800 + random(-1*dith, dith);
+	return dur;
+end;
+
+sub int get_blank_duration(int dith) begin ### AGAIN....MULTIPLE BLANK SCREENS...
+	int dur = 250 + random(-1*dith, dith);
+	return dur;
+end;
+
+sub int get_percentage(int nt, int nc) begin	## Total Stim, Number Correct
+	int x = 100/nt;
+	int per = x * nc;
+	return per;
+end;
+
+sub int get_letter_number(string char) begin		##  Returns the button number for an input letter
+	int rtrn = 0;
+	if (char == "A" || char == "a") then
+		rtrn = 14;
+	elseif (char == "B" || char == "b") then
+		rtrn = 25;
+	elseif (char == "C" || char == "c") then
+		rtrn = 23;
+	elseif (char == "D" || char == "d") then
+		rtrn = 16;
+	elseif (char == "E" || char == "e") then
+		rtrn = 6;
+	elseif (char == "F" || char == "f") then
+		rtrn =17;
+	elseif (char == "G" || char == "g") then
+		rtrn = 18;
+	elseif (char == "H" || char == "h") then
+		rtrn = 19;
+	elseif (char == "I" || char == "i") then
+		rtrn = 11;
+	elseif (char == "J" || char == "j") then
+		rtrn = 20;
+	elseif (char == "K" || char == "k") then
+		rtrn = 1;
+	elseif (char == "L" || char == "l") then
+		rtrn = 2;
+	elseif (char == "M" || char == "m") then
+		rtrn = 27;
+	elseif (char == "N" || char == "n") then
+		rtrn = 26;
+	elseif (char == "O" || char == "o") then
+		rtrn = 12;
+	elseif (char == "P" || char == "p") then
+		rtrn = 13;
+	elseif (char == "Q" || char == "q") then
+		rtrn = 4;
+	elseif (char == "R" || char == "r") then
+		rtrn = 7;
+	elseif (char == "S" || char == "s") then
+		rtrn = 15;
+	elseif (char == "T" || char == "t") then
+		rtrn = 8;
+	elseif (char == "U" || char == "u") then
+		rtrn = 10;
+	elseif (char == "V" || char == "v") then
+		rtrn = 24;
+	elseif (char == "W" || char == "w") then
+		rtrn = 5;
+	elseif (char == "X" || char == "x") then
+		rtrn = 22;
+	elseif (char == "Y" || char == "y") then
+		rtrn = 9;
+	elseif (char == "Z" || char == "z") then
+		rtrn = 21;
+	end;
+	return rtrn;
+end;
+
+sub print_2d_array(array <string, 2>& arr) begin		##Used to terminal print 2d arrays
+	loop int j = 1 until j > arr.count() begin
+		term.print(string(j) + ": ");
+		loop int k = 1 until k > arr[j].count() begin
+			term.print(arr[j][k] + "\t");
+			k = k + 1;
+		end;
+		term.print("\n");
+		j = j + 1;
+	end;
+end;
+
+sub print_1d_array(array <int, 1>& arr) begin		##Used to terminal print 2d arrays
+	term.print_line("1D Array: ");
+	loop int j = 1 until j > arr.count() begin
+		term.print(string(arr[j]) + ", ");
+		j = j + 1;
+	end;
+end;
+
+sub
+	get_input_file(string name, array <string, 2>& stim)		# Get stimulus from this duel column file 
+begin
+	input_file inOT = new input_file;
+	inOT.open( name );
+	inOT.set_delimiter( '\t' ); # for get_line()
+	int count = 0;
+	array <string> tmp[2];
+	loop until
+		inOT.end_of_file() || count == 100 || !inOT.last_succeeded()
+	begin
+		tmp[1] = inOT.get_string();
+		tmp[2] = inOT.get_string();
+		stim.add(tmp);
+		count = count + 1;
+	end;
+end;
+
+sub
+	get_input_csv(int condition, array <string, 2>& stim)		# Get stimulus from this duel column file.  Condition of 5 for study 1.
+begin
+	stim.resize(0);
+	int blocks;
+	int block_length;
+	
+	if (condition == 5) then
+		blocks = 10;
+	else
+		blocks = 3;
+	end;
+	
+	input_file in_stim = new input_file;
+	input_file in_trig = new input_file;
+	input_file in_cond = new input_file;
+	if (condition == 1) then		
+		in_stim.open("CSVs/OT_Practice_BLOCKS.csv");
+		in_trig.open("CSVs/OT_Practice_TRIGGERS.csv");
+		in_cond.open("CSVs/OT_Practice_CONDITIONS.csv");
+	elseif (condition == 5) then
+		in_stim.open("CSVs/Study_1_BLOCKS.csv");
+		in_trig.open("CSVs/Study_1_TRIGGERS.csv");
+		in_cond.open("CSVs/Study_1_CONDITIONS.csv");
+	elseif (condition == 6) then			
+		in_stim.open("CSVs/Study_2_BLOCKS.csv");
+		in_trig.open("CSVs/Study_2_TRIGGERS.csv");
+		in_cond.open("CSVs/Study_2_CONDITIONS.csv");
+	else
+		in_stim.open("CSVs/PM_Practice_BLOCKS.csv");
+		in_trig.open("CSVs/PM_Practice_TRIGGERS.csv");
+		in_cond.open("CSVs/PM_Practice_CONDITIONS.csv");
+	end;
+	
+	in_stim.set_delimiter( ',' ); # for get_line()
+	in_trig.set_delimiter( ',' ); # for get_line()
+	in_cond.set_delimiter( ',' ); # for get_line()
+
+	array <string> fullstim[0][0];
+	array <string> tmpstim[0];
+
+	array <string> fulltrig[0][0];
+	array <string> tmptrig[0];
+	
+	array <string> fullcond[0][0];
+	array <string> tmpcond[0];
+		
+	loop int count = 1 until
+		in_stim.end_of_file() || count == 100 || !in_stim.last_succeeded()
+	begin
+		
+		in_stim.get_string().split(",",tmpstim);
+		fullstim.add(tmpstim);
+		stim.add(tmpstim);
+		tmpstim.resize(0);
+		in_trig.get_string().split(",",tmptrig);
+		fulltrig.add(tmptrig);
+		stim.add(tmptrig);
+		tmptrig.resize(0);
+		in_cond.get_string().split(",",tmpcond);
+		fullcond.add(tmpcond);
+		stim.add(tmpcond);
+		tmpcond.resize(0);
+		count = count + 1;
+	end;
+
+end;
+
+sub
+	add_PM(array <string, 2>& stim, array <string, 2>& PM)
+begin
+	array <int> PMPlacement[7] = {-3,-2,-1,0,1,2,3};
+	int PMPlace1 = PMPlacement[random(1,7)]+16;		##PM placement1
+	int PMPlace2 = random(PMPlace1+1,stim.count());	##PM placement2
+	int first_PM = random(1,2);							##Which PM comes first
+	int second_PM = 0;
+	if (first_PM == 1) then second_PM = 2; else second_PM = 1; end;	#Which PM comes second
+	term.print_line(string(PMPlace1) + " " + string(PMPlace2));
+
+	array <string> tmp[0][0];
+	tmp.add(stim[PMPlace1]);
+	tmp.add(stim[PMPlace2]);
+	
+	stim[PMPlace1][1]=PM[first_PM][1]; stim[PMPlace1][2]=PM[first_PM][2]; stim[PMPlace1][3]="PM";
+	stim[PMPlace2][1]=PM[second_PM][1]; stim[PMPlace2][2]=PM[second_PM][2]; stim[PMPlace2][3]="PM";
+	
+	stim.add(tmp[1]);
+	stim.add(tmp[2]);
+end;
+
+sub
+	append_array(array <string, 2>& arr1, array <string, 2>& arr2, array <string, 2>& arr3, array <string, 2>& outArr)	##Add all eliments to Stim Array
+begin
+	array <string> tmp_str[3] = {"", "", ""};
+	loop
+		int i = 1;
+	until 
+		i > arr2.count()
+	begin
+		tmp_str[1] = arr2[i][1];
+		tmp_str[2] = arr2[i][2];
+		tmp_str[3] = "OTD";
+		outArr.add(tmp_str);
+		i = i + 1;
+	end;
+	loop
+		int i = 1;
+	until 
+		i > arr3.count()
+	begin
+		tmp_str[1] = arr3[i][1];
+		tmp_str[2] = arr3[i][2];
+		tmp_str[3] = "OT";
+		outArr.add(tmp_str);
+		i = i + 1;
+	end;
+	outArr.shuffle();
+	add_PM(outArr, arr1);
+end;
+
+sub
+	build_blocks(array<int, 1>& blocks, int length)		#Builds an array with numbers incrimented by 3 to cover FullStim Arrray Stimulus rows
+begin
+	loop int i = 1 until i > length begin
+		blocks.add(i);
+		i = i + 3;
+	end;
+	print_1d_array(blocks);
+end;
+
+sub
+	bool get_response( array<string, 1>& rrt, int target)
+begin
+	bool correct = false;
+	int tmp = 0;
+	string resp = "";
+	if (bool( response_manager.response_count() )) then
+		rrt[1] = string(response_manager.last_response());
+		term.print_line("THIS IS THE LAST BUTTON PRESS " + rrt[1]);
+		term.print_line("THIS IS THE TARGET " + string(target));
+		if (response_manager.last_response() == target)then
+			correct = true;
+		end;
+		stimulus_data last = stimulus_manager.last_stimulus_data();
+		tmp = last.reaction_time();
+	else
+		rrt[1] = "";
+	end;
+	if (tmp == 0) then
+		rrt[2] = "";
+	else
+		rrt[2] = string(tmp);
+	end;
+	return correct;
+end;
+
+sub						# in - Stim, target - target button, target_letter - PM letter target
+	int parse_string(string in, int target, string target_letter)		## Return OT target button after PM stim
+begin
+	int OT_button = 0;
+	int first_instance = in.find(target_letter);
+	int second_instance = in.find(target_letter, 3);
+	term.print_line("First pos: " + string(first_instance) + ", second position: " + string(second_instance));
+	if (first_instance != 0) then	## A PM trial
+		if (first_instance == 2 && second_instance == 4) then ## duel task
+			OT_button = target;
+		else
+			if (target == 1) then
+				OT_button = 2;
+			else
+				OT_button = 1;
+			end;
+		end;
+	end;
+	return OT_button;
+end;
+
+sub
+	bool duel_task_pm(array<string, 1>& rrt, int target)		# Presents Duel task condition PM.  stim = Stimulus word, responses = array to hold responses
+begin
+	bool r = false;
+	int s_time = clock.time();
+	int e_time = s_time+1600;
+	stim_trial_pic.present();
+	int tmp_count = 1;
+	string tmp_time = "";
+	string resp = "";
+	loop until clock.time() >= e_time begin
+		if (response_manager.response_count() == tmp_count) then
+			resp = resp + "[" + string(response_manager.last_response()) + "]";
+			tmp_time = tmp_time + "[" + string(clock.time()-s_time) + "]";
+			#term.print_line("PM response count in loop: " + string(response_manager.response_count()) + ", Resp: " + resp + ", tmp_time: " + tmp_time);
+			tmp_count = tmp_count + 1;
+		end;
+		if (tmp_count >= 3) then break; end;	# end after 2 responses
+	end;
+	int e_time2 = clock.time()+1000;
+	blank_pic.present();
+	loop until clock.time() >= e_time2 begin end;
+	#term.print_line("PM response count outside loop: " + string(response_manager.response_count()) + ", Resp: " + resp + ", tmp_time: " + tmp_time);
+	rrt[1] = resp;
+	rrt[2] = tmp_time;
+	term.print_line(resp);
+	term.print_line("["+string(target)+"][3]");
+	if (resp == "["+string(target)+"][3]") then r = true; end;
+	return r;
+end;
+
+sub
+	log_string(output_file out, int tn, string stim, string s_type, string res, string rt, string ot_correct, int block, int fix_dur) 
+begin
+	out.print(string(tn) + "," + stim + "," + s_type + "," + res + "," + rt + "," + ot_correct + "," + string(block) + "," + string(fix_dur) + "\n");
+end;
