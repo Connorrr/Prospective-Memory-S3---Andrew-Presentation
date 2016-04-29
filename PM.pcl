@@ -2,13 +2,13 @@
 #Description:	Presentation File for Prospective Memory
 #Programmer:	Connor Reid
 #Created@:		7/7/14
-#LastMod@:		7/7/14
+#LastMod@:		28/4/16
 #-------------------------------------------------------------------
 include "PM_Subs.pcl";
 include "PM_Global.pcl";
 
 preset int target;
-preset int PM_Condition;
+int PM_Condition = 1;		#  Fixed it to Abrupt task
 preset int study;
 output_port port;
 
@@ -33,11 +33,11 @@ if (target > 2 || target < 1) then
 end;
 
 if (PM_Condition > 2 || PM_Condition < 1) then
-	exit("PM_Condition must be either 1 for DT or 2 for AT");
+	exit("PM_Condition must be either 1 for AT or 2 for DT");
 end;
 
-if (study > 2 || study < 1) then
-	exit("Study can only be 1 or 2");
+if (study > 3 || study < 1) then
+	exit("Study can only be 1, 2 or 3");
 end;
 
 ot_instructions_text.set_font_size(FONT_SIZE);
@@ -176,14 +176,22 @@ instructions.present();
 array<string> FullStim[0][2];	# Array containing full words
 if (study == 1) then
 	get_input_csv(5, FullStim);
-else
+elseif (study == 2) then
 	get_input_csv(6, FullStim);
+else
+	get_input_csv(7, FullStim);
 end;
 
 #print_2d_array(FullStim);
 
 array <int> blocks[0];
 build_blocks(blocks, FullStim.count());		#blocks array contains numbers for every stimulus row 
+#  Blocks array simply addresses the rownumbers of the Fullstim to mimic the csv file
+#
+#  blocks[i] -> _BLOCKS.csv
+#  blocks[i]+1 -> _CONDITIONS.csv
+#  blocks[i]+2 -> _TRIGGERS.csv
+
 if (study != 2)then
 	blocks.shuffle();
 end;
@@ -221,7 +229,7 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			PM_flag = true;
 		end;
 		#term.print_line(FullStim[blocks[i]+1][l]);
-		if (study == 1) then			##  Set instructions for Study 1
+		if (study == 1 || study == 3) then			##  Set instructions for Study 1
 			if (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
 				#port.send_code(int(FullStim[blocks[i]+1][l]),10);
 				target_letter = FullStim[blocks[i]][l];
@@ -285,7 +293,7 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			port.send_code(int(FullStim[blocks[i]+1][l]),10);
 			is_pass = duel_task_pm(rrt, parse_string(FullStim[blocks[i]][l], target, target_letter));
 		elseif (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
-			if (study == 1)then
+			if (study == 1 || study == 3)then
 				instructions.present();
 				term.print_line("INSTRUCTIONS");
 			end;

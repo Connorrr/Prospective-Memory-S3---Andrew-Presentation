@@ -221,6 +221,10 @@ begin
 		in_stim.open("CSVs/Study_2_BLOCKS.csv");
 		in_trig.open("CSVs/Study_2_TRIGGERS.csv");
 		in_cond.open("CSVs/Study_2_CONDITIONS.csv");
+	elseif (condition == 7) then			
+		in_stim.open("CSVs/Study_3_BLOCKS.csv");
+		in_trig.open("CSVs/Study_3_TRIGGERS.csv");
+		in_cond.open("CSVs/Study_3_CONDITIONS.csv");
 	else
 		in_stim.open("CSVs/PM_Practice_BLOCKS.csv");
 		in_trig.open("CSVs/PM_Practice_TRIGGERS.csv");
