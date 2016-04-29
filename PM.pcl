@@ -59,7 +59,7 @@ int per = 0;						# percentage correct
 string target_letter = "Z";	# The target letter used in PM tasks
 
 out.print("Practice\n");
-loop int k = 1 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
+loop int k = 5 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
 
 	if (k == 1) then
 		pract_inst_string = get_ot_practice_instructions_string();
@@ -192,7 +192,7 @@ build_blocks(blocks, FullStim.count());		#blocks array contains numbers for ever
 #  blocks[i]+1 -> _CONDITIONS.csv
 #  blocks[i]+2 -> _TRIGGERS.csv
 
-if (study != 2)then
+if (study == 1)then		# TODO:  Check if study3 needs to be shuffled or not
 	blocks.shuffle();
 end;
 fix_dur = 0; 
@@ -208,7 +208,7 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 	loop
 		int l = 1
 	until
-		l > FullStim[blocks[i]].count()		## Column
+		l > FullStim[blocks[i]].count()		# Column
 	begin
 		fix_dur = get_fixation_duration(DITHER);		#Dither the fixation cross duration
 		fixation_trial.set_duration(fix_dur);
@@ -224,6 +224,8 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			else
 				target_button = 2;
 			end;
+		#  TODO:  AT this point I need to added the new possible button presses
+		#  TODO:  I also need to make sure that a "double target letter" is correct only when no button is pressed
 		else
 			target_button = 3;
 			PM_flag = true;
