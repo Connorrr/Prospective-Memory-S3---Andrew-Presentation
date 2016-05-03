@@ -9,8 +9,8 @@ scenario = "PM";
 response_matching = simple_matching;
 no_logfile = true;
 
-active_buttons = 27;
-button_codes = 1, 2, 3, 4, 5, 6, 7, 8 ,9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27;
+active_buttons = 29;
+button_codes = 1, 2, 3, 4, 5, 6, 7, 8 ,9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29;
 
 default_background_color = 0,0,0;
 default_font_size = 65;

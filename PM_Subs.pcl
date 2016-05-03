@@ -343,6 +343,9 @@ begin
 		stimulus_data last = stimulus_manager.last_stimulus_data();
 		tmp = last.reaction_time();
 	else
+		if (target == 0) then
+			correct = true;
+		end;
 		rrt[1] = "";
 	end;
 	if (tmp == 0) then

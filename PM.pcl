@@ -7,9 +7,10 @@
 include "PM_Subs.pcl";
 include "PM_Global.pcl";
 
-preset int target;
+preset int target = 1;
 int PM_Condition = 1;		#  Fixed it to Abrupt task
-preset int study;
+int study = 3;
+preset int congruent = 1;
 output_port port;
 
 if (output_port_manager.port_count() == 0) then      
@@ -59,7 +60,7 @@ int per = 0;						# percentage correct
 string target_letter = "Z";	# The target letter used in PM tasks
 
 out.print("Practice\n");
-loop int k = 5 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
+loop int k = 3 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
 
 	if (k == 1) then
 		pract_inst_string = get_ot_practice_instructions_string();
@@ -210,29 +211,47 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 	until
 		l > FullStim[blocks[i]].count()		# Column
 	begin
-		fix_dur = get_fixation_duration(DITHER);		#Dither the fixation cross duration
+		fix_dur = get_fixation_duration(DITHER);		# Dither the fixation cross duration
 		fixation_trial.set_duration(fix_dur);
 		fixation_trial.present();
 		blank_dur = get_blank_duration(BLANK_DITHER);
 		short_blank_trial.set_duration(blank_dur);
 		short_blank_trial.present();
-		if(FullStim[blocks[i]+2][l] == "1")then		
-			target_button = target;
+		if(FullStim[blocks[i]+2][l] == "1")then		# blocks[i]+2] -> Conditions
+			if (target == 1) then
+				target_button = 21	#  Study 3 value for match
+			else 
+				target_button = 22	#  Study 3 value for match
+			end;		
 		elseif(FullStim[blocks[i]+2][l] == "2")then
 			if(target == 2)then
-				target_button = 1;
+				target_button = 21;
 			else
-				target_button = 2;
+				target_button = 22;
 			end;
-		#  TODO:  AT this point I need to added the new possible button presses
+		elseif(FullStim[blocks[i]+2][l] == "3")then
+			target_button = 0;									#  No response when target in both positions
+		elseif(FullStim[blocks[i]+2][l] == "4") then		# Target in left position
+			if (congruent == 1) then
+				target_button = 28;								# Press Left
+			else
+				target_button = 29;								# Press Right
+			end;
+		elseif(FullStim[blocks[i]+2][l] == "5") then		# Target in right position
+			if (congruent == 1) then
+				target_button = 29;								# Press Right
+			else
+				target_button = 28;								# Press Left
+			end;
 		#  TODO:  I also need to make sure that a "double target letter" is correct only when no button is pressed
 		else
 			target_button = 3;
 			PM_flag = true;
 		end;
-		#term.print_line(FullStim[blocks[i]+1][l]);
-		if (study == 1 || study == 3) then			##  Set instructions for Study 1
-			if (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
+		
+		####  SET AND DISPLAY STIMULUS ##### START
+		if (study == 1 || study == 3) then			##  Set stimulus for Study 1
+			if (int(FullStim[blocks[i]+1][l]) == 6) then	# blocks[i]+1 -> TRIGGERS
 				#port.send_code(int(FullStim[blocks[i]+1][l]),10);
 				target_letter = FullStim[blocks[i]][l];
 				PM_flag = false;
@@ -246,7 +265,7 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			end;
 		else	## Set Instructions for Study 2
 			int trgt_btn = 0;								# Target button for target trial
-			if (int(FullStim[blocks[i]+2][l]) == 5)then
+			if (int(FullStim[blocks[i]+2][l]) == 5)then	
 				PM_flag = false;
 				target_letter = FullStim[blocks[i]][l];
 				loop int k = 0 until k > 0 begin
@@ -290,11 +309,14 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			end;
 			port.send_code(int(FullStim[blocks[i]+1][l]),10);
 		end;
-		if (PM_flag && PM_Condition == 2) then			#  Duel Task
+		####  SET STIMULUS ##### END
+		
+		###  GET RESPONSES & DISPLAY STIMULUS ####  START
+		if (PM_flag && PM_Condition == 2) then			#  Duel Task  ##  NOT IN STUDY 3
 			term.print_line("PM TASK");
 			port.send_code(int(FullStim[blocks[i]+1][l]),10);
 			is_pass = duel_task_pm(rrt, parse_string(FullStim[blocks[i]][l], target, target_letter));
-		elseif (int(FullStim[blocks[i]+1][l]) == 5 || int(FullStim[blocks[i]+1][l]) == 6) then
+		elseif (int(FullStim[blocks[i]+1][l]) == 6) then
 			if (study == 1 || study == 3)then
 				instructions.present();
 				term.print_line("INSTRUCTIONS");
@@ -303,9 +325,11 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 			term.print_line("STIM");
 			port.send_code(int(FullStim[blocks[i]+1][l]),10);
 			stim_trial.present();
-			is_pass = get_response(rrt, target_button);
+			is_pass = get_response(rrt, target_button);		# is_pass -> correct (TRUE/FALSE), rrt[1] -> button pressed, rrt[2] -> Response Time
 			short_blank_trial2.present();
 		end;
+		###  GET RESPONSES #### END
+		
 		if (is_pass) then
 			OT_Correct = "Correct";
 		else
