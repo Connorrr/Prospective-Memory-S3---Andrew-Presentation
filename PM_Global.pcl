@@ -1,3 +1,4 @@
 int FONT_SIZE = 30;
-int DITHER = 150;					# +/- milliseconds for fixation cross duration
-int BLANK_DITHER = 50;			# +/- milliseconds for blank cross duration
+int DITHER = 150;								# +/- milliseconds for fixation cross duration
+int BLANK_DITHER = 50;						# +/- milliseconds for blank cross duration
+bool USING_RESPONSE_BOARD = true;		#  If using RB 830 set to true

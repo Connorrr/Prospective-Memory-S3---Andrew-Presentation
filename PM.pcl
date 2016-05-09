@@ -50,6 +50,19 @@ string OT_Correct = "";			# Was the response correct.  Used in Log files
 int target_button = 0;			# The correct button for the user to press
 int fix_dur = 0;					# Duration of the fixation cross
 int blank_dur = 0;				# Duration of the blank screens between fixation and stim
+int LL = 21;						#  Left Left Response Button
+int LR = 22;						#  Left Right Response Button
+int RL = 28;						#  Right Left Response Button
+int RR = 29;						#  Right Right Response Button
+int S = 3;							#  Start Button
+
+if (USING_RESPONSE_BOARD) then	#  Set response buttons
+	LL = 30;						#  Left Left Response Button
+	LR = 31;						#  Left Right Response Button
+	RL = 32;						#  Right Left Response Button
+	RR = 33;						#  Right Right Response Button
+	S = 34;							#  Start Button
+end;
 
 ######################  PRACTICE  ###########################
 
@@ -60,7 +73,7 @@ int per = 0;						# percentage correct
 string target_letter = "Z";	# The target letter used in PM tasks
 
 out.print("Practice\n");
-loop int k = 3 until k > 2 begin		# go through all three practices (original:  loop int k = 1 until k > 2 begin)
+loop int k = 1 until k > 2 begin		# go through all four practices (original:  loop int k = 1 until k > 2 begin)
 
 	if (k == 1) then
 		pract_inst_string = get_ot_practice_instructions_string();
@@ -95,16 +108,35 @@ loop int k = 3 until k > 2 begin		# go through all three practices (original:  l
 			short_blank_trial.set_duration(blank_dur);
 			short_blank_trial.present();
 			stim_trial_text.set_caption(PracticeWords[i][j], true);	#Get Stimulus
+			
 			if(PracticeWords[i+2][j] == "1")then							#Stimulus is OT Match (e.g. LKJKH)
-				target_button = target;											#target button is correct
+				if (target == 1) then
+					target_button = LL	#  Study 3 value for match
+				else 
+					target_button = LR	#  Study 3 value for match
+				end;		
 			elseif(PracticeWords[i+2][j] == "2")then						#Stimulus is Non-Match (e.g. LGJKH)
-				if(target == 2)then												#target button is the opposite to preset selection
-					target_button = 1;
+				if(target == 2)then
+					target_button = LL;
 				else
-					target_button = 2;
+					target_button = LR;
 				end;
-			else																		#PM stimulus
-				target_button = 3;
+			elseif(PracticeWords[i+2][j] == "3")then
+				target_button = 0;									#  No response when target in both positions
+			elseif(PracticeWords[i+2][j] == "4") then		# Target in left position
+				if (congruent == 1) then
+					target_button = RL;								# Press Left
+				else
+					target_button = RR;								# Press Right
+				end;
+			elseif(PracticeWords[i+2][j] == "5") then		# Target in right position
+				if (congruent == 1) then
+					target_button = RR;								# Press Right
+				else
+					target_button = RL;								# Press Left
+				end;
+			else
+				target_button = S;
 				PM_flag = true;
 			end;
 			if (PM_flag && PM_Condition == 2) then	#Is Dual Task Trial
@@ -149,7 +181,7 @@ loop int k = 3 until k > 2 begin		# go through all three practices (original:  l
 				i = 10;
 				break;
 			else	#Lets repeat that practice then
-				if (i > 4) then			#  If the user wants to practice again and the all three practice runs are complete, start again
+				if (i > 5) then			#  If the user wants to practice again and the all three practice runs are complete, start again
 					i = -2;
 				end;
 			end;
@@ -157,7 +189,7 @@ loop int k = 3 until k > 2 begin		# go through all three practices (original:  l
 			corr_count = 0;
 			ot_instructions_text.set_caption(get_fail_response(), true);
 			instructions.present();
-			if (i > 4) then			#  If the user has to (failure) practice again and the all three practice runs are complete, start again
+			if (i > 5) then			#  If the user has to (failure) practice again and the all three practice runs are complete, start again
 				i = -2;
 			end;
 		end;
@@ -172,7 +204,7 @@ ot_instructions_text.set_caption(get_start_string());
 ot_instructions_text.set_formatted_text( true );
 ot_instructions_text.redraw();
 instructions_pic.add_part(ot_instructions_text, 0, 0);
-instructions.present();
+#instructions.present();
 
 array<string> FullStim[0][2];	# Array containing full words
 if (study == 1) then
@@ -193,16 +225,15 @@ build_blocks(blocks, FullStim.count());		#blocks array contains numbers for ever
 #  blocks[i]+1 -> _CONDITIONS.csv
 #  blocks[i]+2 -> _TRIGGERS.csv
 
-if (study == 1)then		# TODO:  Check if study3 needs to be shuffled or not
+if (study == 1 || study == 3)then
 	blocks.shuffle();
 end;
 fix_dur = 0; 
 
-#print_1d_array(blocks);
-
 out.print("Trials\n");
 int j = 1;
 
+bool havent_shown_target = true;		
 ##################################### TRIALS ##############################################
 term.print_line("BlocksCount:  " + string(blocks.count()));
 loop int i = 1 until i > blocks.count() begin		## Rows
@@ -219,47 +250,54 @@ loop int i = 1 until i > blocks.count() begin		## Rows
 		short_blank_trial.present();
 		if(FullStim[blocks[i]+2][l] == "1")then		# blocks[i]+2] -> Conditions
 			if (target == 1) then
-				target_button = 21	#  Study 3 value for match
+				target_button = LL	#  Study 3 value for match
 			else 
-				target_button = 22	#  Study 3 value for match
+				target_button = LR	#  Study 3 value for match
 			end;		
 		elseif(FullStim[blocks[i]+2][l] == "2")then
 			if(target == 2)then
-				target_button = 21;
+				target_button = LL;
 			else
-				target_button = 22;
+				target_button = LR;
 			end;
 		elseif(FullStim[blocks[i]+2][l] == "3")then
 			target_button = 0;									#  No response when target in both positions
 		elseif(FullStim[blocks[i]+2][l] == "4") then		# Target in left position
 			if (congruent == 1) then
-				target_button = 28;								# Press Left
+				target_button = RL;								# Press Left
 			else
-				target_button = 29;								# Press Right
+				target_button = RR;								# Press Right
 			end;
 		elseif(FullStim[blocks[i]+2][l] == "5") then		# Target in right position
 			if (congruent == 1) then
-				target_button = 29;								# Press Right
+				target_button = RR;								# Press Right
 			else
-				target_button = 28;								# Press Left
+				target_button = RL;								# Press Left
 			end;
-		#  TODO:  I also need to make sure that a "double target letter" is correct only when no button is pressed
 		else
-			target_button = 3;
+			target_button = S;
 			PM_flag = true;
 		end;
 		
 		####  SET AND DISPLAY STIMULUS ##### START
 		if (study == 1 || study == 3) then			##  Set stimulus for Study 1
 			if (int(FullStim[blocks[i]+1][l]) == 6) then	# blocks[i]+1 -> TRIGGERS
-				#port.send_code(int(FullStim[blocks[i]+1][l]),10);
-				target_letter = FullStim[blocks[i]][l];
-				PM_flag = false;
-				ot_instructions_text.set_caption(get_target_string(FullStim[blocks[i]][l]));
-				ot_instructions_text.set_formatted_text( true );
-				ot_instructions_text.redraw();
-				instructions_pic.remove_part(1);
-				instructions_pic.add_part(ot_instructions_text, 0, 0);
+				if (havent_shown_target) then
+						target_letter = FullStim[blocks[i]][l];
+						PM_flag = false;
+						ot_instructions_text.set_caption(get_target_string(FullStim[blocks[i]][l]));
+						ot_instructions_text.set_formatted_text( true );
+						ot_instructions_text.redraw();
+						instructions_pic.remove_part(1);
+						instructions_pic.add_part(ot_instructions_text, 0, 0);
+						havent_shown_target = false;
+				else
+					PM_flag = false;
+					ot_instructions_text.set_caption("Press the Start or Space Bar when you are ready to continue.");
+					ot_instructions_text.redraw();
+					instructions_pic.remove_part(1);
+					instructions_pic.add_part(ot_instructions_text, 0, 0);
+				end;
 			else
 				stim_trial_text.set_caption(FullStim[blocks[i]][l], true);
 			end;
